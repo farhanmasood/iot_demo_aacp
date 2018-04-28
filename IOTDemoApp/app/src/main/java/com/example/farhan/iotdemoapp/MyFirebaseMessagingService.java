@@ -1,6 +1,7 @@
 package com.example.farhan.iotdemoapp;
 
 import android.app.Service;
+import android.content.Intent;
 import android.util.Log;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -12,6 +13,7 @@ import com.google.firebase.messaging.RemoteMessage;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private final String TAG = MyFirebaseInstanceIDService.class.getSimpleName();
+
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -33,7 +35,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
-            if (/* Check if data needs to be processed by long running job */ true) {
+            if (/* Check if data needs to be processed by long running job */ false) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
                 scheduleJob();
             } else {
@@ -72,5 +74,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void handleNow() {
         Log.d(TAG, "Short lived task is done.");
+        Intent intent=new Intent(this,MainActivity.class);
+        intent.putExtra("take_picture",true);
+        startActivity(intent);
     }
 }

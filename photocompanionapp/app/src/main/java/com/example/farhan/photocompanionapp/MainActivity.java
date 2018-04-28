@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +21,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,16 +38,29 @@ public class MainActivity extends AppCompatActivity {
 
     public final String TAG = MainActivity.class.getSimpleName();
 
-    //public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-    public static final String CLIENT_TOKEN = "f6xu-kgYzto:APA91bGcZsfW6N0Q-c0DHefEjmemQ6lgtGKKwWd105itinVHH7zHTTUGAaJZSrUnlD5YOH-F_ob5U0kQfXAuWD1qAUrYe4N6dL-oV25Bgccg9ya4KetIuj87zk8ibMbkVA94TkEF-qVL";
+    private RecyclerView mRecyclerView;
+    private DoorbellEntryAdapter mAdapter;
+    public static final String CLIENT_TOKEN = "engZErpJZsQ:APA91bHQxTuJ-GIV2l_zelX0vKPWazlrY7V203o64Y3Mzsmwf2KOW1koTBGshNQIQPxPS71rV4gGuyQP0VR7JFFy5nbhLmcgrhiv73oNvDmxAGrBs6ksyFN5UxNI6GCnKzH-OSqj9_4J";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+
+        // Reference for doorbell events from embedded device
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logs");
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.doorbellView);
+        // Show most recent items at the top
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        // Initialize RecyclerView adapter
+        mAdapter = new DoorbellEntryAdapter(this, ref);
+        mRecyclerView.setAdapter(mAdapter);
+        
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -60,26 +77,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onStart() {
+        super.onStart();
+
+        // Initialize Firebase listeners in adapter
+        mAdapter.startListening();
+
+        // Make sure new events are visible
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeChanged(int positionStart, int itemCount) {
+                mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount());
+            }
+        });
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onStop() {
+        super.onStop();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        // Tear down Firebase listeners in adapter
+        mAdapter.stopListening();
     }
+
 
     public static void sendPushToSingleInstance(final Context activity, final HashMap dataValue /*your data from the activity*/, final String instanceIdToken /*firebase instance token you will find in documentation that how to get this*/ ) {
 
@@ -123,65 +143,4 @@ public class MainActivity extends AppCompatActivity {
         Volley.newRequestQueue(activity).add(myReq);
     }
 
-
-
-//
-//    public static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
-//    OkHttpClient mClient = new OkHttpClient();
-//    public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
-//
-//        new AsyncTask<String, String, String>() {
-//            @Override
-//            protected String doInBackground(String... params) {
-//                try {
-//                    JSONObject root = new JSONObject();
-//                    JSONObject notification = new JSONObject();
-//                    notification.put("body", body);
-//                    notification.put("title", title);
-//                    //notification.put("icon", icon);
-//
-//                    JSONObject data = new JSONObject();
-//                    data.put("message", message);
-//
-//                    root.put("notification", notification);
-//                    root.put("data", data);
-//                    //root.put("registration_ids", recipients);
-//
-//                    String result = postToFCM(root.toString());
-//                    Log.d(TAG, "Result: " + result);
-//                    return result;
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(String result) {
-//                try {
-//                    Log.d(TAG,"result: "+result);
-//                    JSONObject resultJson = new JSONObject(result);
-//                    int success, failure;
-//                    success = resultJson.getInt("success");
-//                    failure = resultJson.getInt("failure");
-//                    Toast.makeText(MainActivity.this, "Message Success: " + success + "Message Failed: " + failure, Toast.LENGTH_LONG).show();
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    Toast.makeText(MainActivity.this, "Message Failed, Unknown error occurred.", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        }.execute();
-//    }
-//
-//    String postToFCM(String bodyString) throws IOException {
-//
-//        RequestBody body = RequestBody.create(JSON, bodyString);
-//        Request request = new Request.Builder()
-//                .url(FCM_MESSAGE_URL)
-//                .post(body)
-//                .addHeader("Authorization", "key=" + SERVER_KEY)
-//                .build();
-//        Response response = mClient.newCall(request).execute();
-//        return response.body().string();
-//    }
 }
