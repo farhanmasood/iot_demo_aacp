@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "351323390768",
+    "firebase_url": "https://photocompapp-app.firebaseio.com",
+    "project_id": "photocompapp-app",
+    "storage_bucket": "photocompapp-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351323390768:android:5f9ab71db5f45a9c",
+        "android_client_info": {
+          "package_name": "com.example.farhan.photocompanionapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "351323390768-rtu36ebhdsbueq7dblttv5obtjjqgiai.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.farhan.photocompanionapp",
+            "certificate_hash": "9cb5cfe329de0b6dabfe4e43aa1fed0a8a3023ba"
+          }
+        },
+        {
+          "client_id": "351323390768-7l4raphful6pehlrorl7qm5hinrd4337.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3se6ROewF8BeFKZl48UiRPkFVYHfB7z8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "351323390768-7l4raphful6pehlrorl7qm5hinrd4337.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
