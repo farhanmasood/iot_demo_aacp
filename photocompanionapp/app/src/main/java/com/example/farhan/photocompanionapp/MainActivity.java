@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize RecyclerView adapter
         mAdapter = new DoorbellEntryAdapter(this, ref);
         mRecyclerView.setAdapter(mAdapter);
-        
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
